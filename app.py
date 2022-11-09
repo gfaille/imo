@@ -15,8 +15,6 @@ import streamlit as st
 pickle_in = open("model.pkl", "rb")
 model = pickle.load(pickle_in)
 
-df = pd.read_csv("immobilier2.csv")
-
 qualiter_construction_maison = st.selectbox("qualiter de la construction de base", (1,2,3,4,5,6,7,8,9,10,11,12,13))
 etats_maison = st.selectbox("états de la maison", (1,2,3,4,5))
 annee_construction = st.slider("année de construction", 1900, 2015)
@@ -43,9 +41,9 @@ if st.checkbox("cocher la case si vous avez une cave") :
 else :
     surface_cave = 0
 
-nb_salle_de_bain = st.slider("nombre de salle de bains", 0.0, 10.0, step=0.25)
+nb_salle_de_bain = st.slider("nombre de salle de bains", 0.50, 10.0, step=0.25)
 nb_etage = st.slider("nombre d'étages", 1.0, 4.0, step=0.25)
-nb_chambre = st.slider("nombre de chambres", 1, 35)
+nb_chambre = st.slider("nombre de chambres", 1, 33)
 zipcode = st.selectbox("code postal", ('98001', '98002', '98003', '98004',
        '98005', '98006', '98007', '98008', '98010', '98011', '98014', '98019',
        '98022', '98023', '98024', '98027', '98028', '98029', '98030', '98031',
@@ -68,19 +66,27 @@ code = ('98001', '98002', '98003', '98004',
        '98146', '98148', '98155', '98166', '98168', '98177', '98178', '98188',
        '98198', '98199')
 
-if st.checkbox("cocher la case si vous connaisser pas l'atitude et la longitude"):
+if st.checkbox("cocher la case si vous connaisser pas l'atitude et la longitude") :
     adresse = st.text_input("adresse")
-else : 
-    latitude = st.slider("latitude", 0.0, 50.0)
-    longitude = st.slider("longitude", 0.0, 50.0)
+else :
+    latitudes = st.slider("latitude"  ,  47.0  ,  48.0)
+    longitudes = st.slider("longitude"  ,  -122.0  ,  -121.0)
+    
+    coordonnée = {
+        "lat" : [latitudes],
+        "lon" : [longitudes]
+    }
+    data = pd.DataFrame(coordonnée)
 
-test = [qualiter_construction_maison, etats_maison, annee_construction, annee_renovation, vue_sur_mer, vue_sur_proprieter, surface_maison, surface_terrain, surface_grenier, surface_cave, nb_salle_de_bain, nb_etage, nb_chambre, latitude, longitude]
+test = [nb_chambre, nb_salle_de_bain, surface_maison, surface_terrain, nb_etage, vue_sur_mer, vue_sur_proprieter, etats_maison, qualiter_construction_maison, surface_grenier, surface_cave, annee_construction, annee_renovation]
 if st.button("estimation") :
     for cp in code :
         if cp == zipcode:
             test.append(1)
         else:
             test.append(0)
-    st.write(test)
+
     prediction_prix = model.predict([test])
     st.success(prediction_prix)
+    
+    st.map(data)
