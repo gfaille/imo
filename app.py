@@ -20,7 +20,7 @@ etats_maison = st.selectbox("états de la maison", (1,2,3,4,5))
 annee_construction = st.slider("année de construction", 1900, 2015)
 
 if st.checkbox("cocher la case si la maison a était rénover") :
-    annee_renovation = st.slider("année de rénovation", 1900, 2015)
+    annee_renovation = st.slider("année de rénovation", annee_construction, 2015)
 else :
     annee_renovation = annee_construction
 
@@ -34,7 +34,7 @@ else :
 vue_sur_proprieter = st.selectbox("vue sur la propriété", (0,1,2,3,4))
 surface_maison = st.number_input("indiquez la surface de la maison en mètre carré", min_value=0, max_value=1500)
 surface_terrain = st.number_input("indiquez la surface du terrain en mètre carré", min_value=200, max_value=15000)
-surface_grenier = st.number_input("indiquez la surface du grenier", min_value=30, max_value=900)
+surface_grenier = st.number_input("indiquez la surface du grenier", min_value=0, max_value=900)
 
 if st.checkbox("cocher la case si vous avez une cave") :
     surface_cave = st.number_input("indiquez la surface de la cave", min_value=30, max_value=500)
@@ -67,7 +67,8 @@ code = ('98001', '98002', '98003', '98004',
        '98198', '98199')
 
 if st.checkbox("cocher la case si vous connaisser pas l'atitude et la longitude") :
-    adresse = st.text_input("adresse")
+    latitudes = None
+    longitudes = None
 else :
     latitudes = st.slider("latitude"  ,  47.0  ,  48.0)
     longitudes = st.slider("longitude"  ,  -122.0  ,  -121.0)
@@ -89,4 +90,5 @@ if st.button("estimation") :
     prediction_prix = model.predict([test])
     st.success(prediction_prix)
     
-    st.map(data)
+    if latitudes and longitudes != None :
+        st.map(data)
